@@ -10,9 +10,9 @@
 #
 
 if [ $# -lt 4 ] ; then
-	echo "-----------------------------------------------------------------------"
+	echo "--------------------------------------------------------------------------"
 	echo "args: <sourcePath> <stepDirectoryPrefix> <numberOfSteps> <outputFolder>"
-	echo ">>> this script flattens subdirectories into branches in a single repo "
+	echo ">>> this script flattens subdirectories into branches in a single repo <<<"
 	echo "for example, given this input structure:"
 	echo ""
 	echo "src/"
@@ -26,68 +26,96 @@ if [ $# -lt 4 ] ; then
 	echo ""
 	echo "then executing ./create-kata-repo.sh src step- 2 out"
 	echo "will create a repo in out with 2 branches, step-1 and step-2"
-	echo "-----------------------------------------------------------------------"
+	echo "NOTE: the script assumes RELATIVE PATHS, executed from root of sourcePath"
+	echo "--------------------------------------------------------------------------"
 	exit 1
 fi
+
+echo "==========================================================================="
+echo "starting process..."
 
 SOURCEPATH="$1"
 STEPDIRPREFIX="$2"
 NUMBEROFSTEPS=$3
 OUTPUTFOLDER="$4"
 
+echo ""
+echo "   SOURCEPATH: $SOURCEPATH"
+echo "STEPDIRPREFIX: $STEPDIRPREFIX"
+echo "NUMBEROFSTEPS: $NUMBEROFSTEPS"
+echo " OUTPUTFOLDER: $OUTPUTFOLDER"
+echo ""
+
 # destroy existing directory/repo if necessary
 if [ -e $OUTPUTFOLDER ] ; then
+	echo "removing existing output directory $OUTPUTFOLDER"
 	rm -rf $OUTPUTFOLDER
 fi
 
 # make new directory
+echo "creating new output directory $OUTPUTFOLDER"
 mkdir $OUTPUTFOLDER
 
 # shift to new directory
+echo "shifting to output directory $OUTPUTFOLDER"
 cd $OUTPUTFOLDER
 
 # create empty repo
+echo "initializing git repository"
 git init
 
 # copy repo README.md file master
-cp $SOURCEPATH/README.md .
+echo "copying ../$SOURCEPATH/README.md to output"
+cp ../$SOURCEPATH/README.md .
 
 # add README.md file to repo and commit
+echo "adding README.md file to repo for initial commit"
 git add .
+echo "initial commit to repo for $SOURCEPATH"
 git commit -m "initial commit of README.md file for $SOURCEPATH"
 
 # copy files and create branches
 
+echo "Starting subproject loop..."
 STEPCOUNT=1
 while [ $STEPCOUNT -le $NUMBEROFSTEPS ] ; do
 
   # track progress
-  echo "creating branch STEP-$STEPCOUNT"
+  echo "--creating branch STEP-$STEPCOUNT"
 
 	# start branch for step
 	git branch STEP-$STEPCOUNT
 	git checkout STEP-$STEPCOUNT
 
 	# copy files for step
-	cp $SOURCEPATH/src/$STEPDIRPREFIX$STEPCOUNT/* .
+	echo "--copying in files from ../$SOURCEPATH/$STEPDIRPREFIX$STEPCOUNT/src/"
+	cp ../$SOURCEPATH/$STEPDIRPREFIX$STEPCOUNT/src/* .
 
 	# add to branch
+	echo "--adding copied files to current branch (STEP-$STEPCOUNT)"
 	git add .
 
 	# commit to branch
+	echo "--committing files in branch for step $STEPCOUNT"
 	git commit -m "added files for step $STEPCOUNT"
 
   # merge with master (but keep branch, don't delete)
+  echo "--merging STEP-$STEPCOUNT branch with master"
   git checkout master
   git merge STEP-$STEPCOUNT
 
+  echo "--step branch processing complete, setting up for next step"
   STEPCOUNT=`expr $STEPCOUNT '+' 1`
 
 done
+echo "...subproject loop completed"
 
 # return to start directory
+echo "shifting back to origin directory"
 cd ..
 
 # done - upload to github/bitbucket/etc manually for now
 echo "done creating $OUTPUTFOLDER repo"
+echo "...process completed."
+echo "==========================================================================="
 
