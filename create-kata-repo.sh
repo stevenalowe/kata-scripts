@@ -50,7 +50,7 @@ cd $OUTPUTFOLDER
 git init
 
 # copy repo README.md file master
-cp ../$SOURCEPATH/README.md .
+cp $SOURCEPATH/README.md .
 
 # add README.md file to repo and commit
 git add .
@@ -69,7 +69,7 @@ while [ $STEPCOUNT -le $NUMBEROFSTEPS ] ; do
 	git checkout STEP-$STEPCOUNT
 
 	# copy files for step
-	cp ../$SOURCEPATH/$STEPDIRPREFIX$STEPCOUNT/* .
+	cp $SOURCEPATH/src/$STEPDIRPREFIX$STEPCOUNT/* .
 
 	# add to branch
 	git add .
