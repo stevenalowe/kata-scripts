@@ -83,7 +83,42 @@ git init
 echo "copying ../$SOURCEPATH/README.md to output"
 cp ../$SOURCEPATH/README.md .
 
-# add README.md file to repo and commit
+# create generic eclipse project files
+echo "adding generic eclipse project files"
+cat > ./.project << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>$SOURCEPATH</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+</projectDescription>
+EOF
+
+# create generic eclipse classpath file
+echo "adding generic eclipse classpath file"
+cat > ./.classpath << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+EOF
+
+# add README.md and eclipse files to repo and commit
 echo "adding README.md file to repo for initial commit"
 git add .
 echo "initial commit to repo for $SOURCEPATH"
