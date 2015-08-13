@@ -1,6 +1,6 @@
 # README #
 
-scripts to create code katas
+Scripts to create code katas
 
 ### What is this repository for? ###
 
